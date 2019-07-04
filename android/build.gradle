@@ -13,6 +13,7 @@ buildscript {
 
 repositories {
     jcenter()
+    maven { url "https://jitpack.io" }
 }
 
 apply plugin: 'com.android.library'
@@ -50,6 +51,6 @@ android {
 
 dependencies {
     implementation "com.facebook.react:react-native:${_reactNativeVersion}"
-    implementation 'com.github.barteksc:android-pdf-viewer:3.1.0-beta.1'
+    implementation 'com.github.Lucasq95:AndroidPdfViewer:master'
     implementation 'com.google.code.gson:gson:2.8.5'
 }
