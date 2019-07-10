@@ -9,7 +9,10 @@
 package org.wonday.pdf;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import android.os.ParcelFileDescriptor;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +22,8 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import javax.annotation.Nullable;
-
 
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
@@ -49,6 +52,7 @@ import com.facebook.react.common.ReactConstants;
 import static java.lang.String.format;
 import java.lang.ClassCastException;
 
+import com.shockwave.pdfium.PdfiumCore;
 import com.shockwave.pdfium.PdfDocument;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -78,8 +82,9 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
     private float lastPageWidth = 0;
     private float lastPageHeight = 0;
 
+    private File file = null;
 
-    public PdfView(ThemedReactContext context, AttributeSet set){
+    public PdfView(ThemedReactContext context, AttributeSet set) {
         super(context,set);
         this.context = context;
         this.instance = this;
@@ -107,10 +112,10 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
 
         float width = this.getWidth();
         float height = this.getHeight();
-        
+
         this.zoomTo(this.scale);
         WritableMap event = Arguments.createMap();
-        
+
         //create a new jason Object for the TableofContents
         Gson gson = new Gson();
         event.putString("message", "loadComplete|"+numberOfPages+"|"+width+"|"+height+"|"+gson.toJson(this.getTableOfContents()));
@@ -120,7 +125,7 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
             "topChange",
             event
          );
-        
+
         //Log.e("ReactNative", gson.toJson(this.getTableOfContents()));
 
     }
@@ -158,8 +163,24 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
         Constants.Pinch.MINIMUM_ZOOM = this.minScale;
         Constants.Pinch.MAXIMUM_ZOOM = this.maxScale;
 
+        int x = Math.round(e.getX());
+        int y = Math.round(e.getY());
+
+        float pdfX = 0;
+        float pdfY = 0;
+
+        int startX = 0;
+        int startY = 0;
+        int sizeX = Math.round(this.instance.getPageSize(this.page).getWidth());
+        int sizeY = Math.round(this.instance.getPageSize(this.page).getHeight());
+        int rotate = 0;
+        PointF mapped = this.instance.mapDeviceCoordsToPage(this.page, startX, startY, sizeX,
+                                                    sizeY, rotate, x, y);
+        pdfX = mapped.x;
+        pdfY = mapped.y;
+
         WritableMap event = Arguments.createMap();
-        event.putString("message", "pageSingleTap|"+page);
+        event.putString("message", "pageSingleTap|"+page+"|"+pdfX+"|"+pdfY);
 
         ReactContext reactContext = (ReactContext)this.getContext();
         reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
@@ -199,37 +220,35 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
     }
 
 
-    public void drawPdf() {
+    public void drawPdf(){
         showLog(format("drawPdf path:%s %s", this.path, this.page));
 
         if (this.path != null){
+              // set scale
+              this.setMinZoom(this.minScale);
+              this.setMaxZoom(this.maxScale);
+              this.setMidZoom((this.maxScale+this.minScale)/2);
+              Constants.Pinch.MINIMUM_ZOOM = this.minScale;
+              Constants.Pinch.MAXIMUM_ZOOM = this.maxScale;
 
-            // set scale
-            this.setMinZoom(this.minScale);
-            this.setMaxZoom(this.maxScale);
-            this.setMidZoom((this.maxScale+this.minScale)/2);
-            Constants.Pinch.MINIMUM_ZOOM = this.minScale;
-            Constants.Pinch.MAXIMUM_ZOOM = this.maxScale;
-
-            this.fromUri(getURI(this.path))
-                .defaultPage(this.page-1)
-                .swipeHorizontal(this.horizontal)
-                .onPageChange(this)
-                .onLoad(this)
-                .onError(this)
-                .onTap(this)
-                .onDraw(this)
-                .onPageScroll(this)
-                .spacing(this.spacing)
-                .password(this.password)
-                .enableAntialiasing(this.enableAntialiasing)
-                .pageFitPolicy(this.fitPolicy)
-                .pageSnap(this.pageSnap)
-                .autoSpacing(this.autoSpacing)
-                .pageFling(this.pageFling)
-                .enableAnnotationRendering(this.enableAnnotationRendering)
-                .load();
-
+              this.fromUri(getURI(this.path))
+                  .defaultPage(this.page-1)
+                  .swipeHorizontal(this.horizontal)
+                  .onPageChange(this)
+                  .onLoad(this)
+                  .onError(this)
+                  .onTap(this)
+                  .onDraw(this)
+                  .onPageScroll(this)
+                  .spacing(this.spacing)
+                  .password(this.password)
+                  .enableAntialiasing(this.enableAntialiasing)
+                  .pageFitPolicy(this.fitPolicy)
+                  .pageSnap(this.pageSnap)
+                  .autoSpacing(this.autoSpacing)
+                  .pageFling(this.pageFling)
+                  .enableAnnotationRendering(this.enableAnnotationRendering)
+                  .load();
         }
     }
 

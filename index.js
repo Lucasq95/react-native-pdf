@@ -91,7 +91,7 @@ export default class Pdf extends Component {
         },
         onError: (error) => {
         },
-        onPageSingleTap: (page) => {
+        onPageSingleTap: (page, x, y) => {
         },
         onScaleChanged: (scale) => {
         },
@@ -341,7 +341,7 @@ export default class Pdf extends Component {
             } else if (message[0] === 'error') {
                 this._onError(new Error(message[1]));
             } else if (message[0] === 'pageSingleTap') {
-                this.props.onPageSingleTap && this.props.onPageSingleTap(message[1]);
+                this.props.onPageSingleTap && this.props.onPageSingleTap(message[1], message[2], message[3]);
             } else if (message[0] === 'scaleChanged') {
                 this.props.onScaleChanged && this.props.onScaleChanged(message[1]);
             }

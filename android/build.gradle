@@ -51,6 +51,6 @@ android {
 
 dependencies {
     implementation "com.facebook.react:react-native:${_reactNativeVersion}"
-    implementation 'com.github.Lucasq95:AndroidPdfViewer:master'
+    implementation 'com.github.Lucasq95:AndroidPdfViewer:4.6.0'
     implementation 'com.google.code.gson:gson:2.8.5'
 }
