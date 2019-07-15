@@ -156,6 +156,33 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
 
     }
 
+    // receives device x and device y as parameters
+    public void emitDeviceToCoordsEvent(int x, int y) {
+      Log.d("SignCoordinates ", x + ", " + y);
+      float pdfX = 0;
+      float pdfY = 0;
+
+      int startX = 0;
+      int startY = 0;
+      int sizeX = Math.round(this.instance.getPageSize(this.page).getWidth());
+      int sizeY = Math.round(this.instance.getPageSize(this.page).getHeight());
+      int rotate = 0;
+      PointF mapped = this.instance.mapDeviceCoordsToPage(this.page, startX, startY, sizeX,
+                                                  sizeY, rotate, x, y);
+      pdfX = mapped.x;
+      pdfY = mapped.y;
+
+      WritableMap event = Arguments.createMap();
+      event.putString("message", "pageCoords|"+this.page+"|"+pdfX+"|"+pdfY);
+
+      ReactContext reactContext = (ReactContext)this.getContext();
+      reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+          this.getId(),
+          "topChange",
+          event
+       );
+    }
+
     @Override
     public boolean onTap(MotionEvent e){
 
@@ -165,6 +192,8 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
 
         int x = Math.round(e.getX());
         int y = Math.round(e.getY());
+
+        Log.d("Screen Coordinates ", x + ", " + y);
 
         float pdfX = 0;
         float pdfY = 0;

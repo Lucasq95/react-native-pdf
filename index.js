@@ -16,7 +16,9 @@ import {
     ProgressBarAndroid,
     ProgressViewIOS,
     ViewPropTypes,
-    StyleSheet
+    StyleSheet,
+    UIManager,
+    findNodeHandle
 } from 'react-native';
 
 import RNFetchBlob from 'rn-fetch-blob';
@@ -57,6 +59,7 @@ export default class Pdf extends Component {
         onPageChanged: PropTypes.func,
         onError: PropTypes.func,
         onPageSingleTap: PropTypes.func,
+        onPageCoords: PropTypes.func,
         onScaleChanged: PropTypes.func,
 
         // Props that are not available in the earlier react native version, added to prevent crashed on android
@@ -92,6 +95,9 @@ export default class Pdf extends Component {
         onError: (error) => {
         },
         onPageSingleTap: (page, x, y) => {
+        },
+        onPageCoords: (page, x, y) => {
+
         },
         onScaleChanged: (scale) => {
         },
@@ -344,10 +350,21 @@ export default class Pdf extends Component {
                 this.props.onPageSingleTap && this.props.onPageSingleTap(message[1], message[2], message[3]);
             } else if (message[0] === 'scaleChanged') {
                 this.props.onScaleChanged && this.props.onScaleChanged(message[1]);
+            } else if (message[0] === 'pageCoords') {
+              this.props.onPageCoords && this.props.onPageCoords(message[1], message[2], message[3])
             }
         }
 
     };
+
+    mapDeviceCoordsToPage = (x, y) => {
+      const deviceX = Math.round(x);
+      const deviceY = Math.round(y);
+      UIManager.dispatchViewManagerCommand(
+        findNodeHandle(this._root),
+        0,
+        [deviceX, deviceY]);
+    }
 
     _onError = (error) => {
 
@@ -405,6 +422,7 @@ export default class Pdf extends Component {
                                                 onPageChanged={this.props.onPageChanged}
                                                 onError={this._onError}
                                                 onPageSingleTap={this.props.onPageSingleTap}
+                                                onPageCoords={this.props.onPageCoords}
                                                 onScaleChanged={this.props.onScaleChanged}
                                             />)
                                     )

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.util.Log;
 import android.graphics.PointF;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -27,6 +28,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.ReadableArray;
 
 import static java.lang.String.format;
 import java.lang.ClassCastException;
@@ -118,6 +120,16 @@ public class RCTPdfManager extends SimpleViewManager<PdfView> {
     @ReactProp(name = "fitPolicy")
     public void setFitPolycy(PdfView pdfView, int fitPolicy) {
         pdfView.setFitPolicy(fitPolicy);
+    }
+
+    @Override
+    public void receiveCommand(PdfView pdfView, int commandId, @Nullable ReadableArray args) {
+        super.receiveCommand(pdfView, commandId, args);
+        int x = args.getInt(0);
+        int y = args.getInt(1);
+        if (commandId == 0) {
+          pdfView.emitDeviceToCoordsEvent(x, y);
+        }
     }
 
     @Override

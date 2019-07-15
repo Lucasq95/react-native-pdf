@@ -38,6 +38,7 @@ export default class PdfView extends Component {
         page: PropTypes.number,
         currentPage: PropTypes.number,
         onPageSingleTap: PropTypes.func,
+        onPageCoords: PropTypes.func,
         onScaleChanged: PropTypes.func,
     };
 
@@ -56,6 +57,9 @@ export default class PdfView extends Component {
         currentPage: -1,
         enablePaging: false,
         onPageSingleTap: (page, x, y) => {
+        },
+        onPageCoords: (page, x, y) => {
+
         },
         onScaleChanged: (scale) => {
         },
@@ -227,6 +231,10 @@ export default class PdfView extends Component {
 
     };
 
+    _onPageCoords = (index, x, y) => {
+        this.props.onPageCoords(index + 1, x, y);
+    }
+
     _onItemDoubleTap = (index) => {
 
         if (this.state.scale >= this.props.maxScale) {
@@ -375,6 +383,7 @@ export default class PdfView extends Component {
                 style={styles.container}
                 onLayout={this._onLayout}
                 onScaleChanged={this._onScaleChanged}
+                onPageCoords={this._onPageCoords}
             >
                 {this.state.pdfLoaded && this._renderList()}
             </PinchZoomView>
