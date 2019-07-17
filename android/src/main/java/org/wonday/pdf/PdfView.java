@@ -167,7 +167,7 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
       int sizeX = Math.round(this.instance.getPageSize(this.page).getWidth());
       int sizeY = Math.round(this.instance.getPageSize(this.page).getHeight());
       int rotate = 0;
-      PointF mapped = this.instance.mapDeviceCoordsToPage(this.page, startX, startY, sizeX,
+      PointF mapped = this.instance.mapDeviceCoordsToPage(this.page - 1, startX, startY, sizeX,
                                                   sizeY, rotate, x, y);
       pdfX = mapped.x;
       pdfY = mapped.y;
@@ -203,7 +203,7 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
         int sizeX = Math.round(this.instance.getPageSize(this.page).getWidth());
         int sizeY = Math.round(this.instance.getPageSize(this.page).getHeight());
         int rotate = 0;
-        PointF mapped = this.instance.mapDeviceCoordsToPage(this.page, startX, startY, sizeX,
+        PointF mapped = this.instance.mapDeviceCoordsToPage(this.page - 1, startX, startY, sizeX,
                                                     sizeY, rotate, x, y);
         pdfX = mapped.x;
         pdfY = mapped.y;
