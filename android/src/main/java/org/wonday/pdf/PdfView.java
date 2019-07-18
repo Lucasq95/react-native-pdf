@@ -162,12 +162,13 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
       float pdfX = 0;
       float pdfY = 0;
 
+      int page = this.page - 1;
       int startX = 0;
       int startY = 0;
-      int sizeX = Math.round(this.instance.getPageSize(this.page).getWidth());
-      int sizeY = Math.round(this.instance.getPageSize(this.page).getHeight());
+      int sizeX = Math.round(this.instance.getPageSize(page).getWidth());
+      int sizeY = Math.round(this.instance.getPageSize(page).getHeight());
       int rotate = 0;
-      PointF mapped = this.instance.mapDeviceCoordsToPage(this.page - 1, startX, startY, sizeX,
+      PointF mapped = this.instance.mapDeviceCoordsToPage(page, startX, startY, sizeX,
                                                   sizeY, rotate, x, y);
       pdfX = mapped.x;
       pdfY = mapped.y;
@@ -198,12 +199,13 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
         float pdfX = 0;
         float pdfY = 0;
 
+        int page = this.page - 1;
         int startX = 0;
         int startY = 0;
-        int sizeX = Math.round(this.instance.getPageSize(this.page).getWidth());
-        int sizeY = Math.round(this.instance.getPageSize(this.page).getHeight());
+        int sizeX = Math.round(this.instance.getPageSize(page).getWidth());
+        int sizeY = Math.round(this.instance.getPageSize(page).getHeight());
         int rotate = 0;
-        PointF mapped = this.instance.mapDeviceCoordsToPage(this.page - 1, startX, startY, sizeX,
+        PointF mapped = this.instance.mapDeviceCoordsToPage(page, startX, startY, sizeX,
                                                     sizeY, rotate, x, y);
         pdfX = mapped.x;
         pdfY = mapped.y;
