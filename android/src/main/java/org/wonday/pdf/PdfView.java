@@ -158,16 +158,35 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
 
     // receives device x and device y as parameters
     public void emitDeviceToCoordsEvent(int x, int y) {
-      Log.d("SignCoordinates ", x + ", " + y);
+
       float pdfX = 0;
       float pdfY = 0;
 
       int page = this.page - 1;
       int startX = 0;
       int startY = 0;
+
+      int pageHeight = (int)this.instance.getPageSize(page).getHeight();
+      int pageWidth = (int)this.instance.getPageSize(page).getWidth();
+
+      int currentYOffset = (int)this.instance.getCurrentYOffset() + (page * pageHeight);
+      int currentXOffset = (int)this.instance.getCurrentXOffset();
+      int spacing = this.instance.getPageSpacing(page);
       int sizeX = Math.round(this.instance.getPageSize(page).getWidth());
       int sizeY = Math.round(this.instance.getPageSize(page).getHeight());
       int rotate = 0;
+
+      if(currentYOffset < 0) {
+        startY = startY + currentYOffset;
+      }
+      if(spacing > 0) {
+        startY = startY + spacing;
+      }
+
+      if(currentXOffset < 0) {
+        startX = startX + currentXOffset;
+      }
+
       PointF mapped = this.instance.mapDeviceCoordsToPage(page, startX, startY, sizeX,
                                                   sizeY, rotate, x, y);
       pdfX = mapped.x;
