@@ -66,7 +66,7 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
     private float maxScale = 3;
     private String asset;
     private String path;
-    private int spacing = 10;
+    private int spacing = 0;
     private String password = "";
     private boolean enableAntialiasing = true;
     private boolean enableAnnotationRendering = true;
@@ -157,7 +157,7 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
     }
 
     // receives device x and device y as parameters
-    public void emitDeviceToCoordsEvent(int x, int y) {
+    public void emitDeviceToCoordsEvent(int x, int y, int containerWidth, int containerHeight) {
 
       float pdfX = 0;
       float pdfY = 0;
@@ -176,24 +176,40 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
       int sizeY = Math.round(this.instance.getPageSize(page).getHeight());
       int rotate = 0;
 
-      if(currentYOffset < 0) {
-        startY = startY + currentYOffset;
-      }
-      if(spacing > 0) {
+      // Log.d("currentOffset", "------------------------");
+      // Log.d("currentOffset contaniner width", String.valueOf(pageWidth)+" "+String.valueOf(containerWidth));
+      // Log.d("currentOffset contaniner height", String.valueOf(pageHeight)+" "+String.valueOf(containerHeight));
+      if(spacing > 0 && (containerHeight > pageHeight)) {
         startY = startY + spacing;
       }
 
-      if(currentXOffset < 0) {
+      if(spacing > 0 && (containerWidth > pageWidth)) {
+        startX = startX + spacing;
+      }
+
+      if(currentXOffset < 0 && (containerWidth < pageWidth)) {
         startX = startX + currentXOffset;
+      }
+
+      if(currentYOffset < 0 && (containerHeight < pageHeight)) {
+        startY = startY + currentYOffset;
       }
 
       PointF mapped = this.instance.mapDeviceCoordsToPage(page, startX, startY, sizeX,
                                                   sizeY, rotate, x, y);
       pdfX = mapped.x;
       pdfY = mapped.y;
+      // Log.d("currentOffset Y ", String.valueOf(pdfY));
+      // Log.d("currentOffset X ", String.valueOf(pdfX));
+      // Log.d("currentOffset spacing ", String.valueOf(spacing));
+      // Log.d("currentOffset start X ", String.valueOf(startX));
+      // Log.d("currentOffset start Y ", String.valueOf(startY));
+      // Log.d("currentOffset start pageHeight ", String.valueOf(pageHeight));
+      // Log.d("currentOffset start pageWidth ", String.valueOf(pageWidth));
+      // Log.d("currentOffset", "------------------------");
 
       WritableMap event = Arguments.createMap();
-      event.putString("message", "pageCoords|"+this.page+"|"+pdfX+"|"+pdfY);
+      event.putString("message", "pageCoords|"+this.page+"|"+pdfX+"|"+pdfY+"|"+pageWidth+"|"+pageHeight);
 
       ReactContext reactContext = (ReactContext)this.getContext();
       reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(

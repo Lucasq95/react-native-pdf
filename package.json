@@ -1,37 +1,60 @@
 {
-    "name": "react-native-pdf",
-    "version": "5.1.3",
-    "summary": "A react native PDF view component",
-    "description": "A react native PDF view component, support ios and android platform",
-    "main": "index.js",
-    "typings": "./index.d.ts",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/wonday/react-native-pdf.git"
-    },
-    "keywords": [
-        "react-component",
-        "react-native",
-        "android",
-        "ios",
-        "pdf",
-        "view",
-        "viewer"
-    ],
-    "author": {
-        "name": "Wonday",
-        "url": "https://github.com/wonday"
-    },
-    "license": "MIT",
-    "homepage": "https://github.com/wonday/react-native-pdf",
-    "bugs": {
-        "url": "https://github.com/wonday/react-native-pdf/issues"
-    },
-    "dependencies": {
-        "crypto-js": "^3.1.9-1",
-        "prop-types": "^15.5.10"
-    },
-    "peerDependencies": {
-        "rn-fetch-blob": "^0.10.13"
-    }
+  "_from": "git+https://github.com/Lucasq95/react-native-pdf.git",
+  "_id": "react-native-pdf@5.1.3",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/react-native-pdf",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "git+https://github.com/Lucasq95/react-native-pdf.git",
+    "rawSpec": "git+https://github.com/Lucasq95/react-native-pdf.git",
+    "saveSpec": "git+https://github.com/Lucasq95/react-native-pdf.git",
+    "fetchSpec": "https://github.com/Lucasq95/react-native-pdf.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/Lucasq95/react-native-pdf.git#facdb786fb944943bdf2051c534b0876c059aa97",
+  "_spec": "git+https://github.com/Lucasq95/react-native-pdf.git",
+  "_where": "/home/lucas/proyectos/evolve/letsign/app",
+  "author": {
+    "name": "Wonday",
+    "url": "https://github.com/wonday"
+  },
+  "bugs": {
+    "url": "https://github.com/wonday/react-native-pdf/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "prop-types": "^15.5.10"
+  },
+  "deprecated": false,
+  "description": "A react native PDF view component, support ios and android platform",
+  "homepage": "https://github.com/wonday/react-native-pdf",
+  "keywords": [
+    "react-component",
+    "react-native",
+    "android",
+    "ios",
+    "pdf",
+    "view",
+    "viewer"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "react-native-pdf",
+  "peerDependencies": {
+    "rn-fetch-blob": "^0.10.13"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wonday/react-native-pdf.git"
+  },
+  "summary": "A react native PDF view component",
+  "typings": "./index.d.ts",
+  "version": "5.1.3"
 }

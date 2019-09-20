@@ -127,8 +127,10 @@ public class RCTPdfManager extends SimpleViewManager<PdfView> {
         super.receiveCommand(pdfView, commandId, args);
         int x = args.getInt(0);
         int y = args.getInt(1);
+        int width = args.getInt(2);
+        int height = args.getInt(3);
         if (commandId == 0) {
-          pdfView.emitDeviceToCoordsEvent(x, y);
+          pdfView.emitDeviceToCoordsEvent(x, y, width, height);
         }
     }
 
