@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.util.Log;
 import android.graphics.PointF;
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -131,6 +131,10 @@ public class RCTPdfManager extends SimpleViewManager<PdfView> {
         int height = args.getInt(3);
         if (commandId == 0) {
           pdfView.emitDeviceToCoordsEvent(x, y, width, height);
+        }
+        if (commandId == 1) {
+          String id = args.getString(4);
+          pdfView.emitPageCoordsToDevice(x, y, width, height, id);
         }
     }
 

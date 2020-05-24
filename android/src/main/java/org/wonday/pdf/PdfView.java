@@ -219,6 +219,58 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
        );
     }
 
+    /*
+      This method receives x and y page coords and returns x and y device coords.
+    */
+    public void emitPageCoordsToDevice(int x, int y, int containerWidth, int containerHeight, String id) {
+      Log.d("PageCoords", "llego hasta aca 3");
+      float pdfX = 0;
+      float pdfY = 0;
+
+      int page = this.page - 1;
+      int startX = 0;
+      int startY = 0;
+
+      int pageHeight = (int)this.instance.getPageSize(page).getHeight();
+      int pageWidth = (int)this.instance.getPageSize(page).getWidth();
+
+      int currentYOffset = (int)this.instance.getCurrentYOffset() + (page * pageHeight);
+      int currentXOffset = (int)this.instance.getCurrentXOffset();
+      int spacing = this.instance.getPageSpacing(page);
+      int sizeX = Math.round(this.instance.getPageSize(page).getWidth());
+      int sizeY = Math.round(this.instance.getPageSize(page).getHeight());
+      int rotate = 0;
+
+      if(spacing > 0 && (containerHeight > pageHeight)) {
+        startY = startY + spacing;
+      }
+
+      if(spacing > 0 && (containerWidth > pageWidth)) {
+        startX = startX + spacing;
+      }
+
+      if(currentXOffset < 0 && (containerWidth < pageWidth)) {
+        startX = startX + currentXOffset;
+      }
+
+      if(currentYOffset < 0 && (containerHeight < pageHeight)) {
+        startY = startY + currentYOffset;
+      }
+      PointF mapped = this.instance.mapDeviceCoordsToPage(page, startX, startY, sizeX,
+                                                  sizeY, rotate, x, y);
+      float deviceX = mapped.x;
+      float deviceY = mapped.y;
+      WritableMap event = Arguments.createMap();
+      event.putString("message", "deviceCoords|"+deviceX+"|"+deviceY+"|"+id);
+
+      ReactContext reactContext = (ReactContext)this.getContext();
+      reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+          this.getId(),
+          "topChange",
+          event
+       );
+    }
+
     @Override
     public boolean onTap(MotionEvent e){
 
