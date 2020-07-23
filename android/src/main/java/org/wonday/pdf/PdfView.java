@@ -24,6 +24,7 @@ import android.view.MotionEvent;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import javax.annotation.Nullable;
+import android.util.DisplayMetrics;
 
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
@@ -187,26 +188,29 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
         startX = startX + spacing;
       }
 
-      if(currentXOffset < 0 && (containerWidth < pageWidth)) {
-        startX = startX + currentXOffset;
-      }
-
-      if(currentYOffset < 0 && (containerHeight < pageHeight)) {
-        startY = startY + currentYOffset;
-      }
+      // if(currentXOffset < 0 && (containerWidth < pageWidth)) {
+      //   startX = startX + currentXOffset;
+      // }
+      //
+      // if(currentYOffset < 0 && (containerHeight < pageHeight)) {
+      //   startY = startY + currentYOffset;
+      // }
 
       PointF mapped = this.instance.mapDeviceCoordsToPage(page, startX, startY, sizeX,
                                                   sizeY, rotate, x, y);
       pdfX = mapped.x;
       pdfY = mapped.y;
-      // Log.d("currentOffset Y ", String.valueOf(pdfY));
-      // Log.d("currentOffset X ", String.valueOf(pdfX));
-      // Log.d("currentOffset spacing ", String.valueOf(spacing));
-      // Log.d("currentOffset start X ", String.valueOf(startX));
-      // Log.d("currentOffset start Y ", String.valueOf(startY));
-      // Log.d("currentOffset start pageHeight ", String.valueOf(pageHeight));
-      // Log.d("currentOffset start pageWidth ", String.valueOf(pageWidth));
-      // Log.d("currentOffset", "------------------------");
+
+      Log.d("currentOffset Y ", String.valueOf(pdfY));
+      Log.d("currentOffset X ", String.valueOf(pdfX));
+      Log.d("currentOffset spacing ", String.valueOf(spacing));
+      Log.d("currentOffset start X ", String.valueOf(startX));
+      Log.d("currentOffset start Y ", String.valueOf(startY));
+      Log.d("currentOffset start containerHeight ", String.valueOf(containerHeight));
+      Log.d("currentOffset start containerWidth ", String.valueOf(containerWidth));
+      Log.d("currentOffset start pageHeight ", String.valueOf(pageHeight));
+      Log.d("currentOffset start pageWidth ", String.valueOf(pageWidth));
+      Log.d("currentOffset", "------------------------");
 
       WritableMap event = Arguments.createMap();
       event.putString("message", "pageCoords|"+this.page+"|"+pdfX+"|"+pdfY+"|"+pageWidth+"|"+pageHeight);
@@ -219,13 +223,19 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
        );
     }
 
+    // public float pxToDp(int px) {
+    //     DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+    //     return (px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    // }
+
+    public float pxToDp(int px) {
+        return (px / getContext().getResources().getDisplayMetrics().density);
+    }
+
     /*
       This method receives x and y page coords and returns x and y device coords.
     */
     public void emitPageCoordsToDevice(int x, int y, int containerWidth, int containerHeight, String id) {
-      Log.d("PageCoords", "llego hasta aca 3");
-      float pdfX = 0;
-      float pdfY = 0;
 
       int page = this.page - 1;
       int startX = 0;
@@ -242,26 +252,45 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
       int rotate = 0;
 
       if(spacing > 0 && (containerHeight > pageHeight)) {
-        startY = startY + spacing;
+        startY = startY + spacing / 2;
       }
 
       if(spacing > 0 && (containerWidth > pageWidth)) {
-        startX = startX + spacing;
+        startX = startX + spacing / 2;
       }
 
-      if(currentXOffset < 0 && (containerWidth < pageWidth)) {
-        startX = startX + currentXOffset;
-      }
-
-      if(currentYOffset < 0 && (containerHeight < pageHeight)) {
-        startY = startY + currentYOffset;
-      }
-      PointF mapped = this.instance.mapDeviceCoordsToPage(page, startX, startY, sizeX,
+      Point mapped = this.instance.mapPageCoordsToDevice(page, startX, startY, sizeX,
                                                   sizeY, rotate, x, y);
-      float deviceX = mapped.x;
-      float deviceY = mapped.y;
+
+      CoordinateConverter coordinateConverter = new CoordinateConverter(this.instance, this.file);
+
+      PointF converted = coordinateConverter.convertDocToView(x, y, page);
+
+      double deviceX = pxToDp(mapped.x);
+      double deviceY = pxToDp(mapped.y);
+      float zoom = this.instance.getZoom();
+
+      Log.d("currentOffset", "PAGE COORDS TO DEVICE");
+      Log.d("currentOffset ZOOM ", String.valueOf(zoom));
+      Log.d("currentOffset PAGE INDEX ", String.valueOf(page));
+      Log.d("currentOffset Y ", String.valueOf(y));
+      Log.d("currentOffset X ", String.valueOf(x));
+      Log.d("currentOffset pixel Y ", String.valueOf(mapped.y));
+      Log.d("currentOffset pixel X ", String.valueOf(mapped.x));
+      Log.d("currentOffset spacing ", String.valueOf(spacing));
+      Log.d("currentOffset start X ", String.valueOf(startX));
+      Log.d("currentOffset start Y ", String.valueOf(startY));
+      Log.d("currentOffset start pageHeight ", String.valueOf(pageHeight));
+      Log.d("currentOffset start pageWidth ", String.valueOf(pageWidth));
+      Log.d("currentOffset start containerHeight ", String.valueOf(containerHeight));
+      Log.d("currentOffset start containerWidth ", String.valueOf(containerWidth));
+      Log.d("currentOffset result Y ", String.valueOf(deviceY));
+      Log.d("currentOffset result X ", String.valueOf(deviceX));
+      Log.d("currentOffset", "------------------------");
+
       WritableMap event = Arguments.createMap();
       event.putString("message", "deviceCoords|"+deviceX+"|"+deviceY+"|"+id);
+      // event.putString("message", "deviceCoords|"+converted.x+"|"+converted.y+"|"+id);
 
       ReactContext reactContext = (ReactContext)this.getContext();
       reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
@@ -450,7 +479,8 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
         Uri parsed = Uri.parse(uri);
 
         if (parsed.getScheme() == null || parsed.getScheme().isEmpty()) {
-          return Uri.fromFile(new File(uri));
+          this.file = new File(uri);
+          return Uri.fromFile(this.file);
         }
         return parsed;
     }
