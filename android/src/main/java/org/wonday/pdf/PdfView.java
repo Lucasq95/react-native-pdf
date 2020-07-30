@@ -110,8 +110,9 @@ public class PdfView extends PDFView implements OnPageChangeListener,OnLoadCompl
     @Override
     public void loadComplete(int numberOfPages) {
 
-        float width = this.getWidth();
-        float height = this.getHeight();
+        int page = this.page - 1;
+        float width = this.instance.getPageSize(page).getWidth();
+        float height = this.instance.getPageSize(page).getHeight();
 
         this.zoomTo(this.scale);
         WritableMap event = Arguments.createMap();
